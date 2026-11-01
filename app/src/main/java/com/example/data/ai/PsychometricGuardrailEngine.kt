@@ -147,8 +147,10 @@ object PsychometricGuardrailEngine {
             3. CHOICE GATE & BATON-PASS FIDELITY:
                - Gate 1 must reflect ${activeChar.name}'s Dominant cognitive function (${activeChar.cognitiveStack.substringBefore(">").trim()}) and high-precision specialty (${activeChar.scientificSpecialty}).
                - Gate 2 must challenge ${activeChar.name}'s Auxiliary/Tertiary function via cross-squad collaboration with ${partner?.name ?: "their partner"}.
-               - Gate 3 must test ${activeChar.name}'s Enneagram ${activeChar.enneagram} core tension ("${activeChar.lieBelieved}").
-               - Every 'batonPassQuote' MUST sound unmistakably like ${activeChar.name}'s OCEAN cadence (${lock.oceanSpeechCadenceRule}).
+                - Gate 3 must test ${activeChar.name}'s Enneagram ${activeChar.enneagram} core tension ("${activeChar.lieBelieved}").
+                - Every 'batonPassQuote' MUST sound unmistakably like ${activeChar.name}'s OCEAN cadence (${lock.oceanSpeechCadenceRule}).
+            
+            ${NarrativeCalibrationEngine.buildBiomechanicalCalibrationPromptBlock(activeChar, solNumber = 1)}
         """.trimIndent()
     }
 
@@ -179,6 +181,7 @@ object PsychometricGuardrailEngine {
      * Post-processes and sanitizes AI-generated Choice Gates to guarantee that:
      * - Next POV IDs are valid canonical characters
      * - Baton-pass quotes and gate outcomes carry the active character's psychometric signature
+     *   and pass the 3-Pass De-AI Calibration filter.
      */
     fun enforceGateFidelity(
         activeChar: EnclaveCharacter,
@@ -207,14 +210,17 @@ object PsychometricGuardrailEngine {
             }
             gate.copy(
                 nextPovId = safeNextPov,
-                scientificDomain = hardenedDomain
+                scientificDomain = hardenedDomain,
+                outcomePreview = NarrativeCalibrationEngine.calibrateProseThreePass(gate.outcomePreview),
+                batonPassQuote = NarrativeCalibrationEngine.calibrateProseThreePass(gate.batonPassQuote)
             )
         }
     }
 
     /**
      * Post-processes and validates AI-generated Grand Feast exchanges against the canonical
-     * 16-character registry so speaker names, roles, squads, and MBTI tags never hallucinate or drift.
+     * 16-character registry and 3-Pass De-AI Calibration so speaker names, roles, squads,
+     * MBTI tags, and dialogue lines never hallucinate or drift into AI-slop.
      */
     fun enforceFeastFidelity(
         rawExchanges: List<FeastExchange>,
@@ -228,6 +234,7 @@ object PsychometricGuardrailEngine {
                 ?: byName[ex.speakerName.lowercase()]
                 ?: allCharacters.firstOrNull { ex.speakerName.contains(it.name, ignoreCase = true) }
 
+            val calibratedDialogue = NarrativeCalibrationEngine.calibrateProseThreePass(ex.dialogue)
             if (canonical != null) {
                 val stateTag = if (canonical.isVexInverted) {
                     "⚡ Vex-${canonical.vexStarSign}"
@@ -238,10 +245,11 @@ object PsychometricGuardrailEngine {
                     speakerId = canonical.id,
                     speakerName = canonical.name,
                     roleTitle = "${canonical.roleTitle} • $stateTag",
-                    squad = canonical.squad
+                    squad = canonical.squad,
+                    dialogue = calibratedDialogue
                 )
             } else {
-                ex
+                ex.copy(dialogue = calibratedDialogue)
             }
         }
     }
