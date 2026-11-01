@@ -140,7 +140,7 @@ object SovereignMarchTowerDefenseEngine {
             specialistId = specialist.id,
             specialistName = specialist.name,
             mbti = specialist.mbti,
-            partnerId = specialist.partnerId,
+            partnerId = specialist.partnerNodeId,
             jobId = cls.id,
             col = col,
             row = row,
@@ -417,14 +417,18 @@ object SovereignMarchTowerDefenseEngine {
         val sequelState = if (unlockedStage4) "NONE" else "YES_BUT_RECOVERY"
         val jobTitle = HERO_CLASSES[mvpTower.jobId]?.displayName(terminologyMode) ?: "Basalt Tectonist"
 
-        val draftProse =
-            "The Bourdon pressure gauge on Sector 4 climbed past forty-two megapascals as the armored column breached the basalt trench. " +
+        val draftProse = if (victory) {
+            "The Bourdon pressure gauge on Sector 4 climbed past forty-two megapascals as the armored column rounded the basalt trench. " +
             "${mvpTower.specialistName} locked the $jobTitle housing into the highground detent. " +
             "The gasket held. " +
-            "Across $wavesCleared assault waves, the squad repositioned $repositionCount times along the catwalk and triggered $totalSynergies dual-element catalyst detonations before the carapace vanguard reached the inner sluice. " +
-            "At Ryn's galley table on Sol $solNumber, ${mvpTower.specialistName} set the calibration wrench beside the fermented root-stew while the manifold settled into a clean 432-hertz lock."
+            "Across $wavesCleared curated waves, the squad executed $repositionCount tactical dashes along the catwalk and triggered $totalSynergies dual-element catalyst reactions before the carapace vanguard reached the inner sluice. " +
+            "At Ryn's galley table on Sol $solNumber, ${mvpTower.specialistName} set the calibration wrench beside the roasted tuber-stew while the manifold settled into a clean 432-hertz lock."
+        } else {
+            "The Bourdon pressure gauge on Sector 4 spiked past forty-two megapascals as the heavy carapace column pried open the outer sluice. " +
+            "After $wavesCleared waves and $totalSynergies catalyst reactions, ${mvpTower.specialistName} unclipped the $jobTitle telemetry core intact and led a disciplined Swain sequel fallback to the inner bulkhead so the Sovereign Citadel could re-index for the second push."
+        }
 
-        val calibrated = NarrativeCalibrationEngine.runThreePassDeAiCalibration(draftProse)
+        val calibrated = NarrativeCalibrationEngine.calibrateProseThreePass(draftProse)
         val audit = NarrativeCalibrationEngine.scoreStopSlop5D(calibrated)
 
         return EpochBattleResolution(

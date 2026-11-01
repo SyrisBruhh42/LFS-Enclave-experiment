@@ -198,7 +198,7 @@ object PsychometricGuardrailEngine {
                 activeChar.partnerNodeId
             }
             val fnTag = when {
-                gate.isVexGate -> "⚡ ${activeChar.vexStarSign} Shadow"
+                gate.isVexGate -> "[VEX] ${activeChar.vexStarSign} Shadow"
                 idx == 0 -> "${activeChar.mbti} Dom-${stackFunctions.getOrElse(0) { "Ti" }}"
                 idx == 1 -> "${activeChar.mbti} Aux-${stackFunctions.getOrElse(1) { "Ne" }}"
                 else -> "Enneagram ${activeChar.enneagram}"
@@ -211,7 +211,7 @@ object PsychometricGuardrailEngine {
             gate.copy(
                 nextPovId = safeNextPov,
                 scientificDomain = hardenedDomain,
-                outcomePreview = NarrativeCalibrationEngine.calibrateProseThreePass(gate.outcomePreview),
+                outcomeNarrative = NarrativeCalibrationEngine.calibrateProseThreePass(gate.outcomeNarrative),
                 batonPassQuote = NarrativeCalibrationEngine.calibrateProseThreePass(gate.batonPassQuote)
             )
         }
