@@ -1,0 +1,6 @@
+{
+  "name": "Enclave 16",
+  "description": "A 3D interactive Choice Gate narrative sandbox based on The Enclave of the 16, powered by AI simulation, Rashomon POV relays, Vex Overrides, and the nightly Grand Feast.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

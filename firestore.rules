@@ -1,0 +1,129 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidEnclaveSaveState(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.userId.size() >= 1 &&
+             data.userId.size() <= 128 &&
+             data.dayNumber is int &&
+             data.dayNumber >= 1 &&
+             data.dayNumber <= 10000 &&
+             data.relayStep is int &&
+             data.relayStep >= 1 &&
+             data.relayStep <= 10 &&
+             data.activePovId is string &&
+             data.activePovId.size() >= 1 &&
+             data.activePovId.size() <= 64 &&
+             data.currentBiome is string &&
+             data.currentBiome.size() >= 1 &&
+             data.currentBiome.size() <= 64 &&
+             data.colonyMorale is int &&
+             data.colonyMorale >= 0 &&
+             data.colonyMorale <= 100 &&
+             data.magneticFlux is int &&
+             data.magneticFlux >= 0 &&
+             data.magneticFlux <= 100 &&
+             data.gatesTraversed is int &&
+             data.gatesTraversed >= 0 &&
+             data.gatesTraversed <= 100000 &&
+             data.statePayloadJson is string &&
+             data.statePayloadJson.size() >= 2 &&
+             data.statePayloadJson.size() <= 200000 &&
+             data.lastSummary is string &&
+             data.lastSummary.size() >= 1 &&
+             data.lastSummary.size() <= 2000 &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    match /users/{userId}/enclave_saves/{saveId} {
+      allow get: if isSignedIn() &&
+                    request.auth.uid == userId &&
+                    isValidId(saveId);
+
+      allow list: if isSignedIn() &&
+                     request.auth.uid == userId;
+
+      allow create: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       isValidId(saveId) &&
+                       incoming().keys().hasAll([
+                         'userId',
+                         'dayNumber',
+                         'relayStep',
+                         'activePovId',
+                         'currentBiome',
+                         'colonyMorale',
+                         'magneticFlux',
+                         'gatesTraversed',
+                         'statePayloadJson',
+                         'lastSummary',
+                         'createdAt',
+                         'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId',
+                         'dayNumber',
+                         'relayStep',
+                         'activePovId',
+                         'currentBiome',
+                         'colonyMorale',
+                         'magneticFlux',
+                         'gatesTraversed',
+                         'statePayloadJson',
+                         'lastSummary',
+                         'createdAt',
+                         'updatedAt'
+                       ]) &&
+                       isValidEnclaveSaveState(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidEnclaveSaveState(incoming()) &&
+                       request.auth.uid == userId &&
+                       isValidId(saveId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'dayNumber',
+                         'relayStep',
+                         'activePovId',
+                         'currentBiome',
+                         'colonyMorale',
+                         'magneticFlux',
+                         'gatesTraversed',
+                         'statePayloadJson',
+                         'lastSummary',
+                         'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       isValidId(saveId);
+    }
+  }
+}

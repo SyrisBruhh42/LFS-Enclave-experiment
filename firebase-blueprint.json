@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "EnclaveSaveState": {
+      "title": "EnclaveSaveState",
+      "description": "Stores a player's Enclave of the 16 3D sandbox simulation timeline, POV relay progress, project telemetry, and chronicle logs.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the authenticated Google user owning this save state."
+        },
+        "dayNumber": {
+          "type": "integer",
+          "description": "Current planetary day cycle number (>= 1)."
+        },
+        "relayStep": {
+          "type": "integer",
+          "description": "Current Rashomon POV relay step within the day (1 to 3, or 4 for Grand Feast)."
+        },
+        "activePovId": {
+          "type": "string",
+          "description": "Identifier of the currently active POV genius character."
+        },
+        "currentBiome": {
+          "type": "string",
+          "description": "Active 3D exoplanet biome identifier."
+        },
+        "colonyMorale": {
+          "type": "integer",
+          "description": "Overall Enclave family morale and cohesion score (0 to 100)."
+        },
+        "magneticFlux": {
+          "type": "integer",
+          "description": "Twin-sun geomagnetic storm intensity (0 to 100)."
+        },
+        "gatesTraversed": {
+          "type": "integer",
+          "description": "Total number of 3D Choice Gates walked through across the campaign."
+        },
+        "statePayloadJson": {
+          "type": "string",
+          "description": "Serialized state snapshot of character stress, Grand Project progress, and Black Market queue."
+        },
+        "lastSummary": {
+          "type": "string",
+          "description": "Human-readable summary of the latest choice gate or Grand Feast outcome."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the save record was created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the save record was last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "dayNumber",
+        "relayStep",
+        "activePovId",
+        "currentBiome",
+        "colonyMorale",
+        "magneticFlux",
+        "gatesTraversed",
+        "statePayloadJson",
+        "lastSummary",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/enclave_saves/{saveId}": {
+      "schema": {
+        "$ref": "#/entities/EnclaveSaveState"
+      },
+      "description": "Per-user collection storing Enclave 16 3D sandbox saves and timeline telemetry."
+    }
+  }
+}
