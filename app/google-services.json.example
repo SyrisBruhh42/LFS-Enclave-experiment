@@ -14,7 +14,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "343980500564-v32vois6b3mmkhnbqt8h7eb18m0issgr.apps.googleusercontent.com",
+          "client_id": "VAULT_INJECTED_AT_RUNTIME.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.aistudio.enclave16.vxzkrp",
@@ -22,7 +22,7 @@
           }
         },
         {
-          "client_id": "343980500564-64grcbe2v2dpl5kf10lv14b1m5679l1s.apps.googleusercontent.com",
+          "client_id": "VAULT_INJECTED_AT_RUNTIME.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "343980500564-64grcbe2v2dpl5kf10lv14b1m5679l1s.apps.googleusercontent.com",
+              "client_id": "VAULT_INJECTED_AT_RUNTIME.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
